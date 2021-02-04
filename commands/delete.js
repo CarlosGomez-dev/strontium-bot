@@ -18,7 +18,7 @@ module.exports = {
       .delete()
       .catch(error => {
         message.react('❌');
-        console.log(error.name, error.message);
+        console.error(error.name, error.message);
       });
   },
 };

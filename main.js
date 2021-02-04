@@ -3,8 +3,8 @@ const fs = require('fs');
 const colors = require('./utils/colors.js');
 
 const config = {
-  prefix: '!',
-  token: process.env.TOKEN,
+  prefix: process.env.NODE_ENV === 'development' ? '@' : '!',
+  token: process.env.NODE_ENV === 'development' ? process.env.TOKEN_DEV : process.env.TOKEN,
   owner: process.env.OWNER,
   env: process.env.NODE_ENV,
 };

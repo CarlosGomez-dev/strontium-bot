@@ -30,7 +30,9 @@ module.exports = {
           .map(command => '`' + prefix + command.name + '`')
           .join(', '),
       );
-      data.push(`\nUse \`${prefix}help <command_name>\` for more info.`);
+      data.push(
+        `\nCommands have aliases, for example: \`${prefix}help\` and \`${prefix}h\`\nUse \`${prefix}help <command_name>\` for more info.`,
+      );
       return message.channel.send(data, { split: true });
     }
 

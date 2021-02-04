@@ -1,7 +1,7 @@
 # Strontium-bot
 
 Discord bot for the Software Rookies discord server.<br>
-Named `strontium` after the group abreviation `SR`.
+Named `strontium` after the group abbreviation `SR`.
 
 ## How it works
 

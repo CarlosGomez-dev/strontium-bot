@@ -61,30 +61,44 @@ module.exports = {
       });
     });
 
+    const timestampCalc = memberLastActivity => {
+      let timeSinceLastActivity = (Date.now() - (memberLastActivity - 1000)) / 1000;
+
+      const days = Math.floor(timeSinceLastActivity / 86400);
+      timeSinceLastActivity %= 86400;
+      const hours = Math.floor(timeSinceLastActivity / 3600);
+      timeSinceLastActivity %= 3600;
+      const minutes = Math.floor(timeSinceLastActivity / 60);
+
+      const timestamp =
+        (days === 0 ? '' : '**' + days + '**d ') +
+        `**${hours}**h` +
+        (days === 0 ? ' **' + minutes + '**m ' : '');
+
+      return [timestamp, days];
+    };
+
     const filterDays = parameters ? parameters[0] : 0;
     const memberActivity = guildMembers
       .filter(member => !member.isBot)
       .sort((memberA, memberB) => memberB.lastActivityTime - memberA.lastActivityTime)
-      .map(member => {
-        let timeSinceLastActivity = (Date.now() - member.lastActivityTime) / 1000;
-
-        const days = Math.floor(timeSinceLastActivity / 86400);
-        timeSinceLastActivity %= 86400;
-        const hours = Math.floor(timeSinceLastActivity / 3600);
-        timeSinceLastActivity %= 3600;
-        const minutes = Math.floor(timeSinceLastActivity / 60);
-
-        member.timestamp =
-          (days === 0 ? '' : '**' + days + '**d ') +
-          `**${hours}**h` +
-          (days === 0 ? '**' + minutes + '**m ' : '');
-        member.memberInfo = `${member.timestamp} - ${member.totalMessages} - <@${member.userId}>`;
-        member.activityDays = days;
-        return member;
+      .map(toMember => {
+        const [timestamp, days] = timestampCalc(toMember.lastActivityTime);
+        toMember.timestamp = timestamp;
+        toMember.activityDays = days;
+        toMember.memberInfo = `${toMember.timestamp} - ${toMember.totalMessages} - <@${toMember.userId}>`;
+        return toMember;
       })
       .filter(member => member.activityDays >= filterDays);
 
     const embedData = [];
+    const validRoles = Object.freeze({
+      testMod: '806194053837881394',
+      moderator: '720652596418969672',
+      newbie: '720652600172609636',
+      rookie: '792582808043520021',
+    });
+
     guildRoles.forEach(role => {
       const listSize = 20;
       const membersInRole = memberActivity.filter(member => member.firstRole === role.roleName);
@@ -94,18 +108,14 @@ module.exports = {
         for (let i = 0; i < membersInRole.length; i += listSize) {
           const filteredList = membersInRole
             .slice(i, i + listSize)
-            .map((member, order) => `${order + i + 1}. ${member.memberInfo}`);
+            .map((toMember, order) => `${order + i + 1}. ${toMember.memberInfo}`);
           roleGroup.name = loopNumber === 1 ? `${role.roleName}` : '-';
           roleGroup.value = filteredList;
           embedData.push(roleGroup);
           roleGroup = {};
           loopNumber++;
         }
-      } else if (
-        role.roleId === '720652596418969672' ||
-        role.roleId === '720652600172609636' ||
-        role.roleId === '792582808043520021'
-      ) {
+      } else if (Object.values(validRoles).find(validRole => validRole === role.roleId)) {
         roleGroup.name = `${role.roleName}`;
         roleGroup.value = 'No data.';
         embedData.push(roleGroup);

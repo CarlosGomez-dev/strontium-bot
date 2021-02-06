@@ -51,7 +51,7 @@ module.exports = {
           }
         });
       }
-      continueLoop = !(messageArray.length < fetchOptions.limit || messageArray.length === uniqueEntryErrors);
+      continueLoop = !(messageArray.length < fetchOptions.limit || uniqueEntryTotalErrors >= 500);
       console.log('loop:', loopCounter, 'fetched:', messageArray.length, 'errors:', uniqueEntryErrors);
     }
     message.react('☑️');

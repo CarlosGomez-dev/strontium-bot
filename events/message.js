@@ -66,6 +66,7 @@ module.exports = (bot, message) => {
 
   try {
     cmd.run(bot, message, parameters);
+    cmd.meme && message.delete();
   } catch (error) {
     console.error(error);
     message.react('😢');

@@ -13,6 +13,6 @@ module.exports = {
   onlyOwner: false,
   run(bot, message, parameters) {
     const attachment = new MessageAttachment('./img/elmo.gif');
-    message.channel.send(attachment);
+    message.channel.send(`${message.author}`, attachment);
   },
 };
